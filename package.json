@@ -1,5 +1,5 @@
 {
-  "name": "babel-plugin-prop-types-schema",
+  "name": "@babel/plugin-prop-types-schema",
   "version": "0.1.0",
   "description": "React prop types to JSON schema",
   "main": "src/index.js",
