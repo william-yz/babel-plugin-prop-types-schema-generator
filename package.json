@@ -1,5 +1,5 @@
 {
-  "name": "babel-plugin-prop-types-schema",
+  "name": "babel-plugin-prop-types-schema-generator",
   "version": "0.1.0",
   "description": "React prop types to JSON schema",
   "main": "src/index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/william-yz/babel-plugin-prop-types-schema.git"
+    "url": "git+https://github.com/william-yz/babel-plugin-prop-types-schema-generator"
   },
   "keywords": [
     "babel",
@@ -19,9 +19,9 @@
   "author": "William Yang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/william-yz/babel-plugin-prop-types-schema/issues"
+    "url": "https://github.com/william-yz/babel-plugin-prop-types-schema-generator/issues"
   },
-  "homepage": "https://github.com/william-yz/babel-plugin-prop-types-schema#readme",
+  "homepage": "https://github.com/william-yz/babel-plugin-prop-types-schema-generator#readme",
   "dependencies": {
     "@babel/core": "^7.0.0",
     "@babel/helper-plugin-utils": "^7.0.0"
