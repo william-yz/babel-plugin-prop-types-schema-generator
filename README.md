@@ -1,0 +1,1 @@
+# babel-plugin-prop-types-schema
