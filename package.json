@@ -1,0 +1,39 @@
+{
+  "name": "babel-plugin-prop-types-schema",
+  "version": "0.1.0",
+  "description": "React prop types to JSON schema",
+  "main": "src/index.js",
+  "scripts": {
+    "cli": "babel --plugins ./src/index.js ./test/fixtures/prop-types/input.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/william-yz/babel-plugin-prop-types-schema.git"
+  },
+  "keywords": [
+    "babel",
+    "react",
+    "prop-types",
+    "JSONSchema"
+  ],
+  "author": "William Yang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/william-yz/babel-plugin-prop-types-schema/issues"
+  },
+  "homepage": "https://github.com/william-yz/babel-plugin-prop-types-schema#readme",
+  "dependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/helper-plugin-utils": "^7.0.0"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/helper-plugin-test-runner": "^7.0.0",
+    "@types/babel__core": "^7.0.1",
+    "jest": "^23.5.0"
+  }
+}
