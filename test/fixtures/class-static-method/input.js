@@ -1,11 +1,5 @@
 class Comp extends React.Component {
-	render() {
-
-	}
-}
-
-const a = {}
-Comp.propTypes = {
+	static propTypes = {
   	/**
     * aaa
     */
@@ -39,5 +33,4 @@ arrShape: PropTypes.arrayOf(PropTypes.shape({
 
 	oneOfString: PropTypes.oneOf(['a','b','c'])
 }
-
-Comp.xx = {}
+}

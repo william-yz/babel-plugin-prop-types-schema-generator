@@ -2,6 +2,8 @@ const { declare } = require('@babel/helper-plugin-utils');
 const { types } = require('@babel/core');
 const os = require('os');
 
+
+
 /**
  * @param {types} t
  */
@@ -13,7 +15,11 @@ function utils(t) {
 		 * @param {string} value
 		 */
 		generateLiteralPropery(key, value) {
-			return t.objectProperty(t.identifier(key), t[typeof value + 'Literal'](value));
+			let type = typeof value;
+			if (typeof value === 'number') {
+				type = 'numeric';
+			}
+			return t.objectProperty(t.identifier(key), t[type + 'Literal'](value));
 		},
 
 		/**
@@ -51,10 +57,15 @@ function utils(t) {
 					.map(line => line.replace(/\s*\**\s*/, ''))
 					.filter(f => f)
 					.forEach(line => {
-						const [key, value] = line.split(':');
+						let [key, ...value] = line.split(':');
+						value = value.join(':')
+						if (value === '') {
+							value = '"' + key.trim() + '"';
+							key = 'title';
+						}
 						extraProps = {
 							key: key.trim(),
-							value: JSON.parse(value.trim())
+							value: eval('(' + value.trim() + ')'),
 						}
 					});
 			}
@@ -201,31 +212,35 @@ module.exports = declare(api => {
 	};
 	const fns = utils(t);
 	return {
+		manipulateOptions(opts, parsedOpts) {
+			parsedOpts.plugins.push('classProperties');
+		},
 		visitor: {
 			MemberExpression(path) {
-				if (!state.start) return;
 				const { node, parent } = path;
 				const { right } = parent;
 				if (!t.isObjectExpression(right)) return;
 				if (t.isIdentifier(node.property, {
 					name: 'propTypes'
 				})) {
+					state.componentName = node.object.name;
 					state.schema = fns.handleProperties(right.properties);
 				}
-
+			},
+			ClassProperty: {
+				enter(path) {
+					if (t.isClassProperty(path.node, { static: true }) && t.isIdentifier(path.node.key, { name: 'propTypes'})) {
+						const schema = fns.handleProperties(path.node.value.properties);
+						const classProperty = t.classProperty(
+							t.identifier('schema'),
+							schema,
+						);
+						classProperty.static = true;
+						path.insertAfter(classProperty);
+					}
+				}
 			},
 			ExpressionStatement: {
-				enter(path) {
-					const { node } = path;
-					if (node.leadingComments &&
-						node.leadingComments.length > 0 &&
-						node.leadingComments[0].value.indexOf('@schema') !== -1
-					) {
-						state.start = true;
-						t.assertAssignmentExpression(node.expression, { operator: '=' });
-						state.componentName = node.expression.left.object.name;
-					}
-				},
 				exit(path) {
 					if (state.schema) {
 						path.insertAfter(t.expressionStatement(
