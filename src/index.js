@@ -1,9 +1,6 @@
 const { declare } = require('@babel/helper-plugin-utils');
 const { types } = require('@babel/core');
 const os = require('os');
-
-
-
 /**
  * @param {types} t
  */
@@ -50,7 +47,7 @@ function utils(t) {
 		},
 
 		handleComment(node) {
-			let extraProps
+			let extraProps = {}
 			if (node.leadingComments && node.leadingComments.length > 0) {
 				const comment = node.leadingComments[0].value;
 				comment.split(os.EOL)
@@ -63,10 +60,7 @@ function utils(t) {
 							value = '"' + key.trim() + '"';
 							key = 'title';
 						}
-						extraProps = {
-							key: key.trim(),
-							value: eval('(' + value.trim() + ')'),
-						}
+						extraProps[key.trim()] = eval('(' + value.trim() + ')');
 					});
 			}
 			return extraProps;
@@ -133,25 +127,32 @@ function utils(t) {
 		}
 	};
 
+	const handleExtraProps = (extraProps) =>{
+		return Object.keys(extraProps)
+			.map(key => {
+				return fns.generateLiteralPropery(key, extraProps[key]);
+			})
+	}
+
 	const propTypes = {
 		string(extraProps) {
 			const properties = [fns.generateLiteralPropery('type', 'string')];
 			if (extraProps) {
-				properties.push(fns.generateLiteralPropery(extraProps.key, extraProps.value))
+				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
 		},
 		number(extraProps) {
 			const properties = [fns.generateLiteralPropery('type', 'number')];
 			if (extraProps) {
-				properties.push(fns.generateLiteralPropery(extraProps.key, extraProps.value))
+				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
 		},
 		bool(extraProps) {
 			const properties = [fns.generateLiteralPropery('type', 'boolean')];
 			if (extraProps) {
-				properties.push(fns.generateLiteralPropery(extraProps.key, extraProps.value))
+				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
 		},
@@ -159,14 +160,14 @@ function utils(t) {
 			const objectExp = this.handleProperties(node.arguments[0].properties);
 			const properties = objectExp.properties;
 			if (extraProps) {
-				properties.push(fns.generateLiteralPropery(extraProps.key, extraProps.value))
+				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
 			}
 			return objectExp;
 		},
 		arrayOf(extraProps, node) {
 			const properties = [fns.generateLiteralPropery('type', 'array')];
 			if (extraProps) {
-				properties.push(fns.generateLiteralPropery(extraProps.key, extraProps.value))
+				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
 			}
 			if (t.isMemberExpression(node.arguments[0])) {
 				properties.push(fns.generateProperty('items', t.objectExpression([fns.generateLiteralPropery('type', node.arguments[0].property.name)])))
@@ -179,7 +180,7 @@ function utils(t) {
 		oneOf(extraProps, node) {
 			const properties = [fns.generateLiteralPropery('type', 'array')];
 			if (extraProps) {
-				properties.push(fns.generateLiteralPropery(extraProps.key, extraProps.value))
+				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
 			}
 			// 默认用第一个作为类型
 			let valueType = typeof node.arguments[0].elements[0].value; //TODO: elements有可能没有
@@ -187,6 +188,13 @@ function utils(t) {
 				fns.generateLiteralPropery('type', valueType),
 				fns.generateProperty('enum', node.arguments[0].__clone()),
 			])));
+			return t.objectExpression(properties);
+		},
+		object(extraProps, node) {
+			const properties = [fns.generateLiteralPropery('type', 'string')];
+			if (extraProps) {
+				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+			}
 			return t.objectExpression(properties);
 		}
 	};

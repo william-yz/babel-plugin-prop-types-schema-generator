@@ -26,6 +26,7 @@ Comp.propTypes = {
 arr: PropTypes.arrayOf(PropTypes.string),
 /**
  * title: "arr-required"
+ * description: "asdasd"
  */
 arrRequired: PropTypes.arrayOf(PropTypes.string).isRequired,
 arrShape: PropTypes.arrayOf(PropTypes.shape({
