@@ -239,13 +239,25 @@ module.exports = declare(api => {
 				enter(path) {
 					if (t.isClassProperty(path.node, { static: true }) && t.isIdentifier(path.node.key, { name: 'propTypes'})) {
 						const schema = fns.handleProperties(path.node.value.properties);
-						const classProperty = t.classProperty(
-							t.identifier('schema'),
-							schema,
-						);
-						classProperty.static = true;
-						path.insertAfter(classProperty);
+						state.schema = schema;
 					}
+				}
+			},
+			ClassDeclaration: {
+				exit(path) {
+					if (state.schema) {
+						path.insertAfter(t.expressionStatement(
+							t.assignmentExpression(
+								'=',
+								t.memberExpression(
+									t.identifier(path.node.id.name),
+									t.identifier('schema')
+								),
+								state.schema
+							)
+						))
+					}
+					state.clear();
 				}
 			},
 			ExpressionStatement: {
