@@ -1,6 +1,5 @@
-const { declare } = require('@babel/helper-plugin-utils');
-const { types } = require('@babel/core');
 const os = require('os');
+
 /**
  * @param {types} t
  */
@@ -202,9 +201,7 @@ function utils(t) {
 	Object.assign(fns, propTypes);
 	return fns;
 }
-module.exports = declare(api => {
-	api.assertVersion(7);
-	/** @type {types} */
+module.exports = api => {
 	const t = api.types;
 	const state = {
 		start: false,
@@ -279,4 +276,4 @@ module.exports = declare(api => {
 			}
 		}
 	}
-})
+}
