@@ -240,7 +240,7 @@ module.exports = (api) => {
 	const t = api.types;
 	const fns = api.version.match(/^7/) ? utils({
 		...t,
-		spreadProperty: t.isSpreadElement,
+		spreadProperty: t.spreadElement,
 		isSpreadProperty: t.isSpreadElement,
 	}) : utils(t);
 
