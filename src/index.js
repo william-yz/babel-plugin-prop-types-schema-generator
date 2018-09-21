@@ -46,19 +46,21 @@ function utils(t) {
 		handleComment(node) {
 			const extraProps = {};
 			if (node.leadingComments && node.leadingComments.length > 0) {
-				const comment = node.leadingComments[0].value;
-				comment.split(os.EOL)
-					.map(line => line.replace(/\s*\**\s*/, ''))
-					.filter(f => f)
-					.forEach((line) => {
-						let [key, ...value] = line.split(':');
-						value = value.join(':');
-						if (value === '') {
-							value = `"${key.trim()}"`;
-							key = 'title';
-						}
-						extraProps[key.trim()] = eval(`(${value.trim()})`);
-					});
+				node.leadingComments.forEach(({ value: comment }) => {
+					comment.split(os.EOL)
+						.map(line => line.replace(/\s*\**\s*/, ''))
+						.filter(f => f)
+						.forEach((line) => {
+							let [key, ...value] = line.split(':');
+							value = value.join(':');
+							if (value === '') {
+								value = `"${key.trim()}"`;
+								key = 'title';
+							}
+							extraProps[key.trim()] = eval(`(${value.trim()})`);
+						});
+
+				})
 			}
 			return extraProps;
 		},
@@ -159,34 +161,35 @@ function utils(t) {
 			});
 			return this.generateObject(this.generateRequired(requires), properties);
 		},
+
+		handleExtraProps(extraProps) {
+			return Object.keys(extraProps)
+				.map((key) => {
+					return fns.generateLiteralPropery(key, extraProps[key]);
+				});
+		}
 	};
 
-	const handleExtraProps = (extraProps) => {
-		return Object.keys(extraProps)
-			.map((key) => {
-				return fns.generateLiteralPropery(key, extraProps[key]);
-			});
-	};
 
 	const propTypes = {
 		string(extraProps) {
 			const properties = [fns.generateLiteralPropery('type', 'string')];
 			if (extraProps) {
-				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
 		},
 		number(extraProps) {
 			const properties = [fns.generateLiteralPropery('type', 'number')];
 			if (extraProps) {
-				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
 		},
 		bool(extraProps) {
 			const properties = [fns.generateLiteralPropery('type', 'boolean')];
 			if (extraProps) {
-				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
 		},
@@ -194,14 +197,14 @@ function utils(t) {
 			const objectExp = this.handleProperties(node.arguments[0].properties);
 			const properties = objectExp.properties;
 			if (extraProps) {
-				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			return objectExp;
 		},
 		arrayOf(extraProps, node) {
 			const properties = [fns.generateLiteralPropery('type', 'array')];
 			if (extraProps) {
-				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			if (t.isMemberExpression(node.arguments[0])) {
 				properties.push(fns.generateProperty('items', t.objectExpression([fns.generateLiteralPropery('type', node.arguments[0].property.name)])));
@@ -214,7 +217,7 @@ function utils(t) {
 		oneOf(extraProps, node) {
 			const properties = [fns.generateLiteralPropery('type', 'array')];
 			if (extraProps) {
-				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			// 默认用第一个作为类型
 			const valueType = typeof node.arguments[0].elements[0].value; // TODO: elements有可能没有
@@ -227,7 +230,7 @@ function utils(t) {
 		object(extraProps, node) {
 			const properties = [fns.generateLiteralPropery('type', 'string')];
 			if (extraProps) {
-				Array.prototype.push.apply(properties, handleExtraProps(extraProps));
+				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
 		},
@@ -238,7 +241,8 @@ function utils(t) {
 }
 module.exports = (api) => {
 	const t = api.types;
-	const fns = api.version.match(/^7/) ? utils({
+	const verionIs7 = !!api.version.match(/^7/);
+	const fns = verionIs7 ? utils({
 		...t,
 		spreadProperty: t.spreadElement,
 		isSpreadProperty: t.isSpreadElement,
@@ -249,17 +253,32 @@ module.exports = (api) => {
 			parsedOpts.plugins.push('*');
 		},
 		visitor: {
-			Program(path) {
+			Program(path, state) {
+
 				try {
 					path.traverse({
+						ClassDeclaration(path) {
+							state.extraProps = null;
+							if (t.isExportDefaultDeclaration(path.parent)) {
+								state.extraProps = fns.handleComment(path.parent);
+							} else {
+								if (path.get('id').isIdentifier()) {
+									if (verionIs7) {
+										state.extraProps = fns.handleComment(path.node);
+									} else {
+										state.extraProps = fns.handleComment(path.node.id);
+									}
+								}
+							}
+						},
 						ClassProperty: {
 							enter(path) {
 								if (t.isClassProperty(path.node, { static: true }) && t.isIdentifier(path.node.key, { name: 'propTypes' })) {
 									if (path.get('value').isObjectExpression()) {
-										path.state = fns.handleProperties(path.node.value.properties);
+										state.schema = fns.handleProperties(path.node.value.properties);
 									}
 									if (path.get('value').isMemberExpression() && path.get('value.property').isIdentifier({ name: 'propTypes' })) {
-										path.state = t.memberExpression(
+										state.schema = t.memberExpression(
 											t.identifier(path.node.value.object.name),
 											t.identifier('schema'),
 										);
@@ -267,12 +286,17 @@ module.exports = (api) => {
 								}
 							},
 							exit(path) {
-								if (path.state) {
-									const prop = t.classProperty(t.identifier('schema'), path.state);
+								const { schema, extraProps } = state;
+								if (schema) {
+									if (extraProps) {
+										Array.prototype.push.apply(schema.properties, fns.handleExtraProps(extraProps));
+									}
+									const prop = t.classProperty(t.identifier('schema'), schema);
 									prop.static = true;
 									path.insertBefore(prop);
+									state.schema = null;
+									state.extraProps = null;
 								}
-								path.state = null;
 							},
 						},
 						ExpressionStatement: {
@@ -284,12 +308,12 @@ module.exports = (api) => {
 											name: 'propTypes',
 										})) {
 											if (path.get('expression.right').isObjectExpression()) {
-												path.state = fns.handleProperties(path.node.expression.right.properties);
+												state.schema = fns.handleProperties(path.node.expression.right.properties);
 											}
 										}
 									}
 									if (path.get('expression.right').isMemberExpression() && path.get('expression.right.property').isIdentifier({ name: 'propTypes' })) {
-										path.state = t.memberExpression(
+										state.schema = t.memberExpression(
 											t.identifier(path.node.expression.right.object.name),
 											t.identifier('schema'),
 										);
@@ -297,21 +321,27 @@ module.exports = (api) => {
 								}
 							},
 							exit(path) {
-								if (path.state) {
+								const { schema, extraProps } = state;
+								if (schema) {
+									if (extraProps) {
+										Array.prototype.push.apply(schema.properties, fns.handleExtraProps(extraProps));
+									}
 									path.insertBefore(t.expressionStatement(t.assignmentExpression(
 										'=',
 										t.memberExpression(
 											t.identifier(path.node.expression.left.object.name),
 											t.identifier('schema'),
 										),
-										path.state,
+										schema,
 									)));
-									path.state = null;
+									state.schema = null;
+									state.extraProps = null;
 								}
 							},
 						},
 					});
 				} catch (e) {
+					throw new Error();
 				}
 			},
 		},
