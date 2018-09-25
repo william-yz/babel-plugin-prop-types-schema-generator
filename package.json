@@ -4,7 +4,9 @@
   "description": "React prop types to JSON schema",
   "main": "src/index.js",
   "scripts": {
-    "cli": "babel ./test/fixtures/class-static-method/input.js"
+    "cli": "node run.js",
+    "test": "jest test",
+    "cov": "jest test --coverage"
   },
   "repository": {
     "type": "git",

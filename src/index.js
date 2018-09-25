@@ -257,20 +257,6 @@ module.exports = (api) => {
 
 				try {
 					path.traverse({
-						ClassDeclaration(path) {
-							state.extraProps = null;
-							if (t.isExportDefaultDeclaration(path.parent)) {
-								state.extraProps = fns.handleComment(path.parent);
-							} else {
-								if (path.get('id').isIdentifier()) {
-									if (verionIs7) {
-										state.extraProps = fns.handleComment(path.node);
-									} else {
-										state.extraProps = fns.handleComment(path.node.id);
-									}
-								}
-							}
-						},
 						ClassProperty: {
 							enter(path) {
 								if (t.isClassProperty(path.node, { static: true }) && t.isIdentifier(path.node.key, { name: 'propTypes' })) {
@@ -286,16 +272,12 @@ module.exports = (api) => {
 								}
 							},
 							exit(path) {
-								const { schema, extraProps } = state;
+								const { schema } = state;
 								if (schema) {
-									if (extraProps) {
-										Array.prototype.push.apply(schema.properties, fns.handleExtraProps(extraProps));
-									}
 									const prop = t.classProperty(t.identifier('schema'), schema);
 									prop.static = true;
 									path.insertBefore(prop);
 									state.schema = null;
-									state.extraProps = null;
 								}
 							},
 						},
@@ -321,11 +303,8 @@ module.exports = (api) => {
 								}
 							},
 							exit(path) {
-								const { schema, extraProps } = state;
+								const { schema } = state;
 								if (schema) {
-									if (extraProps) {
-										Array.prototype.push.apply(schema.properties, fns.handleExtraProps(extraProps));
-									}
 									path.insertBefore(t.expressionStatement(t.assignmentExpression(
 										'=',
 										t.memberExpression(
@@ -335,7 +314,6 @@ module.exports = (api) => {
 										schema,
 									)));
 									state.schema = null;
-									state.extraProps = null;
 								}
 							},
 						},
