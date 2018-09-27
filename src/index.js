@@ -209,6 +209,9 @@ function utils(t) {
 			if (t.isMemberExpression(node.arguments[0])) {
 				properties.push(fns.generateProperty('items', t.objectExpression([fns.generateLiteralPropery('type', node.arguments[0].property.name)])));
 			}
+			if (t.isIdentifier(node.arguments[0])) {
+				properties.push(fns.generateProperty('items', t.objectExpression([fns.generateLiteralPropery('type', node.arguments[0].name)])));
+			}
 			if (t.isCallExpression(node.arguments[0])) {
 				properties.push(fns.generateProperty('items', this.shape(extraProps, node.arguments[0])));
 			}
@@ -233,7 +236,7 @@ function utils(t) {
 				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
 			return t.objectExpression(properties);
-		},
+		}
 	};
 
 	Object.assign(fns, propTypes);

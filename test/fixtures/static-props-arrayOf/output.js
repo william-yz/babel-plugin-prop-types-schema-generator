@@ -1,7 +1,7 @@
 class Comp extends Component {
 	static schema = {
 		type: "object",
-		required: ["arr2", "arr4"],
+		required: ["arr2", "arr4", "arr9", "arr11"],
 		properties: {
 			arr1: {
 				type: "array",
@@ -47,6 +47,51 @@ class Comp extends Component {
 						}
 					}
 				}
+			},
+			arr8: {
+				type: "array",
+				items: {
+					type: "string"
+				}
+			},
+			arr9: {
+				type: "array",
+				items: {
+					type: "number"
+				}
+			},
+			arr10: {
+				type: "array",
+				items: {
+					type: "bool"
+				}
+			},
+			arr11: {
+				type: "array",
+				items: {
+					type: "object",
+					required: ["arr13"],
+					properties: {
+						arr12: {
+							type: "array",
+							items: {
+								type: "string"
+							}
+						},
+						arr13: {
+							type: "array",
+							items: {
+								type: "number"
+							}
+						},
+						arr14: {
+							type: "array",
+							items: {
+								type: "bool"
+							}
+						}
+					}
+				}
 			}
 		}
 	};
@@ -59,6 +104,14 @@ class Comp extends Component {
 			arr5: PropTypes.arrayOf(PropTypes.string),
 			arr6: PropTypes.arrayOf(PropTypes.number).isRequired,
 			arr7: arrayOf(PropTypes.bool)
+		})).isRequired,
+		arr8: PropTypes.arrayOf(string),
+		arr9: PropTypes.arrayOf(number).isRequired,
+		arr10: arrayOf(bool),
+		arr11: arrayOf(shape({
+			arr12: PropTypes.arrayOf(string),
+			arr13: PropTypes.arrayOf(number).isRequired,
+			arr14: arrayOf(bool)
 		})).isRequired
 	};
 

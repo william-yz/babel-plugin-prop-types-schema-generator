@@ -8,6 +8,14 @@ class Comp extends Component {
 			arr6: PropTypes.arrayOf(PropTypes.number).isRequired,
 			arr7: arrayOf(PropTypes.bool),
 		})).isRequired,
+		arr8: PropTypes.arrayOf(string),
+		arr9: PropTypes.arrayOf(number).isRequired,
+		arr10: arrayOf(bool),
+		arr11: arrayOf(shape({
+			arr12: PropTypes.arrayOf(string),
+			arr13: PropTypes.arrayOf(number).isRequired,
+			arr14: arrayOf(bool),
+		})).isRequired,
 	}
 
 }
