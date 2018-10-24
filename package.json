@@ -1,12 +1,13 @@
 {
   "name": "babel-plugin-prop-types-schema-generator",
-  "version": "0.3.2",
-  "description": "React prop types to JSON schema",
+  "version": "0.4.0",
+  "description": "Transfer react prop types to JSON schema",
   "main": "src/index.js",
   "scripts": {
     "cli": "node run.js",
     "test": "jest test",
-    "cov": "jest test --coverage"
+    "cov": "jest test --coverage",
+    "ci": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "coveralls": "^3.0.2",
     "jest": "^23.5.0"
   }
 }

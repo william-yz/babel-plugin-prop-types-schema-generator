@@ -167,6 +167,17 @@ function utils(t) {
 				.map((key) => {
 					return fns.generateLiteralPropery(key, extraProps[key]);
 				});
+		},
+
+		handleFuncProps(extraProps, node) {
+			if (t.isCallExpression(node)) {
+				if (t.isIdentifier(node.callee)) {
+					return this[node.callee.name](extraProps, node);
+				}
+				if (t.isMemberExpression(node.callee) && t.isIdentifier(node.callee.property)) {
+					return this[node.callee.property.name](extraProps, node);
+				}
+			}
 		}
 	};
 
@@ -213,7 +224,7 @@ function utils(t) {
 				properties.push(fns.generateProperty('items', t.objectExpression([fns.generateLiteralPropery('type', node.arguments[0].name)])));
 			}
 			if (t.isCallExpression(node.arguments[0])) {
-				properties.push(fns.generateProperty('items', this.shape(extraProps, node.arguments[0])));
+				properties.push(fns.generateProperty('items', fns.handleFuncProps(extraProps, node.arguments[0])));
 			}
 			return t.objectExpression(properties);
 		},

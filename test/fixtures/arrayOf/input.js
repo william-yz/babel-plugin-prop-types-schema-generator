@@ -7,4 +7,7 @@ Comp.propTypes = {
 		arr6: PropTypes.arrayOf(PropTypes.number).isRequired,
 		arr7: arrayOf(PropTypes.bool),
 	})).isRequired,
+	arr8: arrayOf(arrayOf(shape({
+		arr9: arrayOf(string)
+	})))
 }

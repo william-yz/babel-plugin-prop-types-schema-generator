@@ -46,6 +46,24 @@ Comp.schema = {
 					}
 				}
 			}
+		},
+		arr8: {
+			type: "array",
+			items: {
+				type: "array",
+				items: {
+					type: "object",
+					required: [],
+					properties: {
+						arr9: {
+							type: "array",
+							items: {
+								type: "string"
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 };
@@ -57,6 +75,9 @@ Comp.propTypes = {
 		arr5: PropTypes.arrayOf(PropTypes.string),
 		arr6: PropTypes.arrayOf(PropTypes.number).isRequired,
 		arr7: arrayOf(PropTypes.bool)
-	})).isRequired
+	})).isRequired,
+	arr8: arrayOf(arrayOf(shape({
+		arr9: arrayOf(string)
+	})))
 };
 
