@@ -19,7 +19,11 @@ Comp.schema = {
 			type: "string",
 			prop1: 1,
 			prop2: "22",
-			prop3: true
+			prop3: true,
+			prop4: {
+				sss: 123
+			},
+			prop5: [1, 2, 3]
 		}
 	}
 };
@@ -35,6 +39,8 @@ Comp.propTypes = {
   * prop1: 1
   * prop2: '22'
   * prop3: true
+  * prop4: {sss: 123}
+  * prop5: [1,2,3]
   */
 	str4: string.isRequired
 };

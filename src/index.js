@@ -165,7 +165,7 @@ function utils(t) {
 		handleExtraProps(extraProps) {
 			return Object.keys(extraProps)
 				.map((key) => {
-					return fns.generateLiteralPropery(key, extraProps[key]);
+					return t.objectProperty(t.identifier(key), this.toAst(extraProps[key]));
 				});
 		},
 
@@ -178,6 +178,26 @@ function utils(t) {
 					return this[node.callee.property.name](extraProps, node);
 				}
 			}
+		},
+
+		toAst(any) {
+			switch (typeof any) {
+				case 'string':
+					return t.stringLiteral(any);
+				case 'number':
+					return t.numericLiteral(any);
+				case 'boolean':
+					return t.booleanLiteral(any);
+				case 'undefined':
+					return t.identifier('undefined');
+				case 'object':
+					if (any === null) return t.nullLiteral();
+					if (any instanceof Array) return t.arrayExpression(any.map(this.toAst));
+					return t.objectExpression(Object.keys(any).map(key =>
+						t.objectProperty(t.identifier(key), this.toAst(any[key]))
+					));
+			}
+			return t.identifier(key), t[`${type}Literal`](value)
 		}
 	};
 
