@@ -192,7 +192,7 @@ function utils(t) {
 					return t.identifier('undefined');
 				case 'object':
 					if (any === null) return t.nullLiteral();
-					if (any instanceof Array) return t.arrayExpression(any.map(this.toAst));
+					if (any instanceof Array) return t.arrayExpression(any.map(this.toAst.bind(this)));
 					return t.objectExpression(Object.keys(any).map(key =>
 						t.objectProperty(t.identifier(key), this.toAst(any[key]))
 					));
@@ -262,10 +262,22 @@ function utils(t) {
 			return t.objectExpression(properties);
 		},
 		object(extraProps, node) {
-			const properties = [fns.generateLiteralPropery('type', 'string')];
+			const properties = [fns.generateLiteralPropery('type', 'array')];
 			if (extraProps) {
 				Array.prototype.push.apply(properties, fns.handleExtraProps(extraProps));
 			}
+			properties.push(
+				t.objectProperty(t.identifier('items'), fns.toAst({
+					type: 'object',
+					properties: [{
+						name: 'key',
+						type: 'string'
+					}, {
+						name: 'value',
+						type: 'string'
+					}]
+				})));
+
 			return t.objectExpression(properties);
 		}
 	};
@@ -353,7 +365,7 @@ module.exports = (api) => {
 						},
 					});
 				} catch (e) {
-					// throw new Error();
+					throw new Error();
 				}
 			},
 		},
