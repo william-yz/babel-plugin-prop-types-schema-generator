@@ -4,16 +4,56 @@ class Comp extends Component {
 		required: ["obj2", "obj4"],
 		properties: {
 			obj1: {
-				type: "string"
+				type: "array",
+				items: {
+					type: "object",
+					properties: [{
+						name: "key",
+						type: "string"
+					}, {
+						name: "value",
+						type: "string"
+					}]
+				}
 			},
 			obj2: {
-				type: "string"
+				type: "array",
+				items: {
+					type: "object",
+					properties: [{
+						name: "key",
+						type: "string"
+					}, {
+						name: "value",
+						type: "string"
+					}]
+				}
 			},
 			obj3: {
-				type: "string"
+				type: "array",
+				items: {
+					type: "object",
+					properties: [{
+						name: "key",
+						type: "string"
+					}, {
+						name: "value",
+						type: "string"
+					}]
+				}
 			},
 			obj4: {
-				type: "string"
+				type: "array",
+				items: {
+					type: "object",
+					properties: [{
+						name: "key",
+						type: "string"
+					}, {
+						name: "value",
+						type: "string"
+					}]
+				}
 			}
 		}
 	};
