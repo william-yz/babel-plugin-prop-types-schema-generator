@@ -6,52 +6,56 @@ Comp.schema = {
 			type: "array",
 			items: {
 				type: "object",
-				properties: [{
-					name: "key",
-					type: "string"
-				}, {
-					name: "value",
-					type: "string"
-				}]
+				properties: {
+					key: {
+						type: "string"
+					},
+					value: {
+						type: "string"
+					}
+				}
 			}
 		},
 		obj2: {
 			type: "array",
 			items: {
 				type: "object",
-				properties: [{
-					name: "key",
-					type: "string"
-				}, {
-					name: "value",
-					type: "string"
-				}]
+				properties: {
+					key: {
+						type: "string"
+					},
+					value: {
+						type: "string"
+					}
+				}
 			}
 		},
 		obj3: {
 			type: "array",
 			items: {
 				type: "object",
-				properties: [{
-					name: "key",
-					type: "string"
-				}, {
-					name: "value",
-					type: "string"
-				}]
+				properties: {
+					key: {
+						type: "string"
+					},
+					value: {
+						type: "string"
+					}
+				}
 			}
 		},
 		obj4: {
 			type: "array",
 			items: {
 				type: "object",
-				properties: [{
-					name: "key",
-					type: "string"
-				}, {
-					name: "value",
-					type: "string"
-				}]
+				properties: {
+					key: {
+						type: "string"
+					},
+					value: {
+						type: "string"
+					}
+				}
 			}
 		}
 	}

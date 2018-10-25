@@ -269,13 +269,14 @@ function utils(t) {
 			properties.push(
 				t.objectProperty(t.identifier('items'), fns.toAst({
 					type: 'object',
-					properties: [{
-						name: 'key',
-						type: 'string'
-					}, {
-						name: 'value',
-						type: 'string'
-					}]
+					properties: {
+						key: {
+							type: 'string'
+						},
+						value: {
+							type: 'string'
+						}
+					}
 				})));
 
 			return t.objectExpression(properties);
