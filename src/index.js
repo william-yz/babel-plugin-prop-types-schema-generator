@@ -365,7 +365,7 @@ module.exports = (api) => {
 						},
 					});
 				} catch (e) {
-					throw new Error();
+					// throw new Error();
 				}
 			},
 		},
