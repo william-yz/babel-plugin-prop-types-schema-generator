@@ -18,7 +18,7 @@ class Comp extends Component {
 			arr3: {
 				type: "array",
 				items: {
-					type: "bool"
+					type: "boolean"
 				}
 			},
 			arr4: {
@@ -42,7 +42,7 @@ class Comp extends Component {
 						arr7: {
 							type: "array",
 							items: {
-								type: "bool"
+								type: "boolean"
 							}
 						}
 					}
@@ -63,7 +63,7 @@ class Comp extends Component {
 			arr10: {
 				type: "array",
 				items: {
-					type: "bool"
+					type: "boolean"
 				}
 			},
 			arr11: {
@@ -87,7 +87,7 @@ class Comp extends Component {
 						arr14: {
 							type: "array",
 							items: {
-								type: "bool"
+								type: "boolean"
 							}
 						}
 					}

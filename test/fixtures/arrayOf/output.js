@@ -17,7 +17,7 @@ Comp.schema = {
 		arr3: {
 			type: "array",
 			items: {
-				type: "bool"
+				type: "boolean"
 			}
 		},
 		arr4: {
@@ -41,7 +41,7 @@ Comp.schema = {
 					arr7: {
 						type: "array",
 						items: {
-							type: "bool"
+							type: "boolean"
 						}
 					}
 				}

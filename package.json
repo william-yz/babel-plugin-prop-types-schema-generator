@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-prop-types-schema-generator",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Transfer react prop types to JSON schema",
   "main": "src/index.js",
   "scripts": {
