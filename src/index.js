@@ -244,7 +244,7 @@ function utils(t) {
 				properties.push(fns.generateProperty('items', this[node.arguments[0].name]()));
 			}
 			if (t.isCallExpression(node.arguments[0])) {
-				properties.push(fns.generateProperty('items', fns.handleFuncProps(extraProps, node.arguments[0])));
+				properties.push(fns.generateProperty('items', fns.handleFuncProps(null, node.arguments[0])));
 			}
 			return t.objectExpression(properties);
 		},
